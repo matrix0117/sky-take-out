@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -90,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 让员工
+     * 查询员工
      *
      * @param pageQueryDTO 页面查询dto
      * @return {@link PageResult}
@@ -117,6 +118,27 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .updateUser(BaseContext.getCurrentId())
                 .build();
         employeeMapper.update(employee);
+    }
+
+    /**
+     * 更新员工信息
+     *
+     * @param employeeDTO 员工dto
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employee.setUpdateTime(LocalDateTime.now());
+        employeeMapper.update(employee);
+    }
+
+    @Override
+    public Employee getEmployeeById(Long id) {
+        Employee employee = employeeMapper.getEmployeeById(id);
+        employee.setPassword("******");
+        return employee;
     }
 
 }
