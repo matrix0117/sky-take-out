@@ -78,7 +78,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void addEmployee(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
         employee.setStatus(StatusConstant.ENABLE);
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         employee.setCreateTime(LocalDateTime.now());
@@ -97,9 +97,26 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public PageResult getEmployees(EmployeePageQueryDTO pageQueryDTO) {
-        PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
-        Page<Employee> employees=employeeMapper.getEmployees(pageQueryDTO.getName());
-        return new PageResult(employees.getTotal(),employees.getResult());
+        PageHelper.startPage(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<Employee> employees = employeeMapper.getEmployees(pageQueryDTO.getName());
+        return new PageResult(employees.getTotal(), employees.getResult());
+    }
+
+    /**
+     * 更新员工状态
+     *
+     * @param status 状态
+     * @param id     id
+     */
+    @Override
+    public void update(Integer status, Long id) {
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
+                .build();
+        employeeMapper.update(employee);
     }
 
 }

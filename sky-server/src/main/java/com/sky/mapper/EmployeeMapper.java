@@ -22,4 +22,7 @@ public interface EmployeeMapper {
     void addEmployee(Employee e);
 
     Page<Employee> getEmployees(String name);
+
+
+    void update(Employee employee);
 }
