@@ -12,13 +12,22 @@ spring:
       url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
+  redis:
+    host: ${spring.redis.host}
+    port: ${spring.redis.port}
+#    password: ${spring.redis.password}
+#    database: ${spring.redis.database}
   cloud:
     azure:
       storage:
         blob:
-          account-name: matrix0117
-          account-key: O9UxqSuNMAB95mNN8MADH0OHv1VI468wF5OBketK9OBVcThExswfmUl06TPodEGfmvkSIfaMaBBz+AStn2P78g==
-          container-name: demo
+          account-name: ${spring.cloud.azure.storage.blob.account-name}
+          account-key: ${spring.cloud.azure.storage.blob.account-name}
+          container-name: ${spring.cloud.azure.storage.blob.container-name}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
 
 mybatis:
   #mapper配置文件

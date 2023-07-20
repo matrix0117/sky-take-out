@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface CategoryMapper {
     @AutoFill(value = OperationType.INSERT)
-    public void addCategory(Category category);
+    void addCategory(Category category);
 
     void deleteCategoryById(Long id);
 
@@ -20,4 +20,5 @@ public interface CategoryMapper {
     void update(Category category);
 
     List<Category> getCategoryByType(Integer type);
+
 }

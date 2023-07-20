@@ -6,3 +6,17 @@ sky:
     database: sky_take_out
     username: root
     password: 170511
+
+spring:
+  cloud:
+    azure:
+      storage:
+        blob:
+          account-name: matrix0117
+          account-key: O9UxqSuNMAB95mNN8MADH0OHv1VI468wF5OBketK9OBVcThExswfmUl06TPodEGfmvkSIfaMaBBz+AStn2P78g==
+          container-name: demo
+  redis:
+    host: localhost
+    port: 6379
+#    password:
+#    database:

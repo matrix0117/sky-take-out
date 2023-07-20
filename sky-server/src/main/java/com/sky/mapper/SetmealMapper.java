@@ -1,15 +1,25 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.annotation.AutoFill;
 import com.sky.entity.Setmeal;
+import com.sky.enumeration.OperationType;
+import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 @Mapper
 public interface SetmealMapper {
-    Page<Setmeal> getSetmeals(String name, Long categoryId, Integer status);
+    Page<SetmealVO> getSetmeals(String name, Long categoryId, Integer status);
 
     List<Setmeal> getSetmealByCategory(Long categoryId);
+
+    Setmeal getSetmealById(Long id);
+    @AutoFill(value = OperationType.UPDATE)
+    void updateSetmeal(Setmeal setmeal);
+
+    void deleteSetmeals(Long[] ids);
+    @AutoFill(value = OperationType.INSERT)
+    void addSetmeal(Setmeal setmeal);
 }
