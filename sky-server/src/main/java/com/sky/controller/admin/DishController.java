@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("adminDishController")
 @RequestMapping("/admin/dish")
 public class DishController {
 
-    private DishService dishService;
+    private final DishService dishService;
 
     public DishController(DishService d) {
         dishService = d;

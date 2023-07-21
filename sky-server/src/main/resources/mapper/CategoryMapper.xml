@@ -43,6 +43,11 @@
         order by sort
     </select>
     <select id="getCategoryByType" resultType="com.sky.entity.Category">
-        select * from category where type = #{type}
+        select * from category
+        <where>
+            <if test="type != null">
+                type = #{type}
+            </if>
+        </where>
     </select>
 </mapper>

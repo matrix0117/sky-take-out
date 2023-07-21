@@ -13,7 +13,7 @@ import java.util.List;
 public interface SetmealMapper {
     Page<SetmealVO> getSetmeals(String name, Long categoryId, Integer status);
 
-    List<Setmeal> getSetmealByCategory(Long categoryId);
+    List<Setmeal> getSetmealByCategoryId(Long categoryId);
 
     Setmeal getSetmealById(Long id);
     @AutoFill(value = OperationType.UPDATE)
@@ -22,4 +22,6 @@ public interface SetmealMapper {
     void deleteSetmeals(Long[] ids);
     @AutoFill(value = OperationType.INSERT)
     void addSetmeal(Setmeal setmeal);
+
+
 }

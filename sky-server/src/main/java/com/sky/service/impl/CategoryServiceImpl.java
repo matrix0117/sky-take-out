@@ -4,7 +4,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
-import com.sky.context.BaseContext;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -52,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (dishMapper.getDishByCategory(id).size()>0){
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
         }
-        if (setmealMapper.getSetmealByCategory(id).size()>0){
+        if (setmealMapper.getSetmealByCategoryId(id).size()>0){
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
         }
         categoryMapper.deleteCategoryById(id);

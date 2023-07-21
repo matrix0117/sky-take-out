@@ -13,17 +13,17 @@ spring:
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
   redis:
-    host: ${spring.redis.host}
-    port: ${spring.redis.port}
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
 #    password: ${spring.redis.password}
 #    database: ${spring.redis.database}
   cloud:
     azure:
       storage:
         blob:
-          account-name: ${spring.cloud.azure.storage.blob.account-name}
-          account-key: ${spring.cloud.azure.storage.blob.account-name}
-          container-name: ${spring.cloud.azure.storage.blob.container-name}
+          account-name: ${sky.blob.account-name}
+          account-key: ${sky.blob.account-key}
+          container-name: ${sky.blob.container-name}
   servlet:
     multipart:
       max-file-size: 10MB
@@ -53,5 +53,11 @@ sky:
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+    user-secret-key: matrix
+    user-ttl: 7200000
+    user-token-name: authentication
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
 
 

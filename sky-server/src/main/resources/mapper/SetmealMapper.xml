@@ -44,7 +44,7 @@
         </where>
         order by s.create_time desc
     </select>
-    <select id="getSetmealByCategory" resultType="com.sky.entity.Setmeal">
+    <select id="getSetmealByCategoryId" resultType="com.sky.entity.Setmeal">
         select *
         from setmeal
         where category_id = #{categoryId}

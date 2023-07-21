@@ -6,11 +6,11 @@ import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
-import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -88,8 +88,13 @@ public class SetmealServiceImpl implements SetmealService {
         }
     }
 
-//    @Override
-//    public List<Setmeal> getSetmealByCategory(Long categoryId) {
-//        return setmealMapper.getSetmeals(null,categoryId,null);
-//    }
+    @Override
+    public List<Setmeal> getSetmealByCategoryId(Long categoryId) {
+        return setmealMapper.getSetmealByCategoryId(categoryId);
+    }
+
+    @Override
+    public List<DishItemVO> getDishBySetmealId(Long id) {
+        return setmealDishMapper.getDishBySetmealId(id);
+    }
 }

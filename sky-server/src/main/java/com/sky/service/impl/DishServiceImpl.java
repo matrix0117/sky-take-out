@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,8 +62,8 @@ public class DishServiceImpl implements DishService {
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && flavors.size() > 0) {
             Long dishId = dish.getId();
-            for (int i = 0; i < flavors.size(); i++) {
-                flavors.get(i).setDishId(dishId);
+            for (DishFlavor flavor : flavors) {
+                flavor.setDishId(dishId);
             }
             dishFlavorMapper.addDishFlavor(flavors);
         }
@@ -79,8 +80,8 @@ public class DishServiceImpl implements DishService {
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && flavors.size() > 0) {
             Long dishId = dish.getId();
-            for (int i = 0; i < flavors.size(); i++) {
-                flavors.get(i).setDishId(dishId);
+            for (DishFlavor flavor : flavors) {
+                flavor.setDishId(dishId);
             }
             dishFlavorMapper.addDishFlavor(flavors);
         }
@@ -101,6 +102,20 @@ public class DishServiceImpl implements DishService {
     public void deleteDish(Long[] ids) {
         dishMapper.deleteDish(ids);
         dishFlavorMapper.deleteByDishId(ids);
+    }
+
+    @Override
+    public List<DishVO> getDishByCategoryId(Long categoryId) {
+        List<Dish> dishes = dishMapper.getDishByCategory(categoryId);
+        ArrayList<DishVO> dishVOS = new ArrayList<>(dishes.size());
+        dishes.forEach(dish -> {
+            List<DishFlavor> flavorsByDishId = dishFlavorMapper.getFlavorsByDishId(dish.getId());
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(dish, dishVO);
+            dishVO.setFlavors(flavorsByDishId);
+            dishVOS.add(dishVO);
+        });
+        return dishVOS;
     }
 
 

@@ -6,7 +6,6 @@ import com.sky.entity.Category;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.CategoryService;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +13,9 @@ import java.util.List;
 
 @Slf4j
 @RequestMapping("/admin/category")
-@RestController
+@RestController("adminCategoryController")
 public class CategoryController {
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     public CategoryController(CategoryService c){
         categoryService=c;

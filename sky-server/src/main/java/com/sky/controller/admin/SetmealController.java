@@ -9,7 +9,7 @@ import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController("adminSetmealController")
 @Slf4j
 @RequestMapping("/admin/setmeal")
 public class SetmealController {
