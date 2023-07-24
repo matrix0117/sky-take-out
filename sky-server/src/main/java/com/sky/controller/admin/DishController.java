@@ -8,6 +8,7 @@ import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,6 +66,7 @@ public class DishController {
      * @return {@link Result}
      */
     @PostMapping
+    @CacheEvict(cacheNames = "dishCache",key = "#dishDTO.categoryId")
     public Result addDish(@RequestBody DishDTO dishDTO){
         dishService.addDish(dishDTO);
         return Result.success();
@@ -77,6 +79,7 @@ public class DishController {
      * @return {@link Result}
      */
     @PutMapping
+    @CacheEvict(cacheNames = "dishCache",allEntries = true)
     public Result updateDish(@RequestBody DishDTO dishDTO){
         dishService.updateDish(dishDTO);
         return Result.success();
@@ -90,11 +93,13 @@ public class DishController {
      * @return {@link Result}
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(cacheNames = "dishCache",allEntries = true)
     public Result updateDishStatus(@PathVariable Integer status, Long id){
         dishService.updateDishStatus(status,id);
         return Result.success();
     }
     @DeleteMapping
+    @CacheEvict(cacheNames = "dishCache",allEntries = true)
     public Result deleteDish(Long[] ids){
         dishService.deleteDish(ids);
         return Result.success();
