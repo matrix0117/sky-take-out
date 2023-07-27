@@ -13,6 +13,8 @@ import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Random;
+
 @RestController("userOrderController")
 @RequestMapping("user/order")
 @Slf4j
@@ -49,6 +51,9 @@ public class OrderController {
         log.info("订单支付：{}", ordersPaymentDTO);
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
+
+        orderService.paySuccess(ordersPaymentDTO.getOrderNumber());
+
         return Result.success(orderPaymentVO);
     }
 
@@ -90,9 +95,22 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 再来一单
+     *
+     * @param id id
+     * @return {@link Result}
+     */
     @PostMapping("/repetition/{id}")
     public Result repetitionOrder(@PathVariable Long id){
         orderService.repetitionOrder(id);
+        return Result.success();
+    }
+
+
+    @GetMapping("/reminder/{id}")
+    public Result reminderOrder(@PathVariable Long id){
+        orderService.reminderOrder(id);
         return Result.success();
     }
 }

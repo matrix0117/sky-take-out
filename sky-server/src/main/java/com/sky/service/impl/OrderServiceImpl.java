@@ -14,6 +14,7 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
+import com.sky.server.WebSocketServer;
 import com.sky.service.OrderService;
 import com.sky.utils.HttpClientUtil;
 import com.sky.utils.WeChatPayUtil;
@@ -27,9 +28,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,18 +46,23 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartMapper shoppingCartMapper;
     private final UserMapper userMapper;
 
+
+    private final WebSocketServer webSocketServer;
+
     private final WeChatPayUtil weChatPayUtil;
-    @Value("${com.sky.shop.address}")
+    @Value("${sky.shop.address}")
     private String shopAddress;
-    @Value("${com.sky.baidu.ak}")
+    @Value("${sky.baidu.ak}")
     private String ak;
 
-    public OrderServiceImpl(OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, AddressBookMapper addressBookMapper, ShoppingCartMapper shoppingCartMapper, UserMapper userMapper, WeChatPayUtil weChatPayUtil) {
+
+    public OrderServiceImpl(OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, AddressBookMapper addressBookMapper, ShoppingCartMapper shoppingCartMapper, UserMapper userMapper, WebSocketServer webSocketServer, WeChatPayUtil weChatPayUtil) {
         this.orderMapper = orderMapper;
         this.orderDetailMapper = orderDetailMapper;
         this.addressBookMapper = addressBookMapper;
         this.shoppingCartMapper = shoppingCartMapper;
         this.userMapper = userMapper;
+        this.webSocketServer = webSocketServer;
         this.weChatPayUtil = weChatPayUtil;
     }
 
@@ -111,21 +119,21 @@ public class OrderServiceImpl implements OrderService {
         User user = userMapper.getById(userId);
 
         //调用微信支付接口，生成预支付交易单
-        JSONObject jsonObject = weChatPayUtil.pay(
-                ordersPaymentDTO.getOrderNumber(), //商户订单号
-                new BigDecimal(0.01), //支付金额，单位 元
-                "苍穹外卖订单", //商品描述
-                user.getOpenid() //微信用户的openid
-        );
-
-        if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
-            throw new OrderBusinessException("该订单已支付");
-        }
-
-        OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
-        vo.setPackageStr(jsonObject.getString("package"));
-
-        return vo;
+//        JSONObject jsonObject = weChatPayUtil.pay(
+//                ordersPaymentDTO.getOrderNumber(), //商户订单号
+//                new BigDecimal(0.01), //支付金额，单位 元
+//                "苍穹外卖订单", //商品描述
+//                user.getOpenid() //微信用户的openid
+//        );
+//        if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
+//            throw new OrderBusinessException("该订单已支付");
+//        }
+//
+//        OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
+//        vo.setPackageStr(jsonObject.getString("package"));
+//
+//        return vo;
+        return OrderPaymentVO.builder().build();
     }
 
     /**
@@ -147,6 +155,13 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", 1);
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + outTradeNo);
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     @Override
@@ -192,11 +207,11 @@ public class OrderServiceImpl implements OrderService {
         // 订单处于待接单状态下取消，需要进行退款
         if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             //调用微信支付退款接口
-            weChatPayUtil.refund(
-                    ordersDB.getNumber(), //商户订单号
-                    ordersDB.getNumber(), //商户退款单号
-                    new BigDecimal(0.01),//退款金额，单位 元
-                    new BigDecimal(0.01));//原订单金额
+//            weChatPayUtil.refund(
+//                    ordersDB.getNumber(), //商户订单号
+//                    ordersDB.getNumber(), //商户退款单号
+//                    new BigDecimal(0.01),//退款金额，单位 元
+//                    new BigDecimal(0.01));//原订单金额
 
             //支付状态修改为 退款
             orders.setPayStatus(Orders.REFUND);
@@ -270,15 +285,15 @@ public class OrderServiceImpl implements OrderService {
 
         //支付状态
         Integer payStatus = ordersDB.getPayStatus();
-        if (Objects.equals(payStatus, Orders.PAID)) {
-            //用户已支付，需要退款
-            String refund = weChatPayUtil.refund(
-                    ordersDB.getNumber(),
-                    ordersDB.getNumber(),
-                    new BigDecimal("0.01"),
-                    new BigDecimal("0.01"));
-            log.info("申请退款：{}", refund);
-        }
+//        if (Objects.equals(payStatus, Orders.PAID)) {
+//            //用户已支付，需要退款
+//            String refund = weChatPayUtil.refund(
+//                    ordersDB.getNumber(),
+//                    ordersDB.getNumber(),
+//                    new BigDecimal("0.01"),
+//                    new BigDecimal("0.01"));
+//            log.info("申请退款：{}", refund);
+//        }
 
         // 拒单需要退款，根据订单id更新订单状态、拒单原因、取消时间
         Orders orders = new Orders();
@@ -324,10 +339,10 @@ public class OrderServiceImpl implements OrderService {
         Page<OrderVO> page = orderMapper.getOrders(pageQueryDTO);
         List<OrderVO> result = page.getResult();
         for (OrderVO orderVO : result) {
+            AddressBook address = addressBookMapper.getAddressById(orderVO.getAddressBookId());
+            orderVO.setAddress(address.getProvinceName() + address.getCityName() + address.getDistrictName() + address.getDetail());
             List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderVO.getId());
-            List<String> orderDishList = orderDetails.stream().map(x -> {
-                return x.getName() + "*" + x.getNumber() + ";";
-            }).collect(Collectors.toList());
+            List<String> orderDishList = orderDetails.stream().map(x -> x.getName() + "*" + x.getNumber() + ";").collect(Collectors.toList());
             orderVO.setOrderDishes(String.join("", orderDishList));
             orderVO.setOrderDetailList(orderDetails);
         }
@@ -343,12 +358,12 @@ public class OrderServiceImpl implements OrderService {
         Integer payStatus = ordersDB.getPayStatus();
         if (payStatus == 1) {
             //用户已支付，需要退款
-            String refund = weChatPayUtil.refund(
-                    ordersDB.getNumber(),
-                    ordersDB.getNumber(),
-                    new BigDecimal("0.01"),
-                    new BigDecimal("0.01"));
-            log.info("申请退款：{}", refund);
+//            String refund = weChatPayUtil.refund(
+//                    ordersDB.getNumber(),
+//                    ordersDB.getNumber(),
+//                    new BigDecimal("0.01"),
+//                    new BigDecimal("0.01"));
+//            log.info("申请退款：{}", refund);
         }
 
         // 管理端取消订单需要退款，根据订单id更新订单状态、取消原因、取消时间
@@ -360,13 +375,24 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    @Override
+    public void reminderOrder(Long id) {
+        OrderVO order = orderMapper.getById(id);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", 2);
+        map.put("orderId", id);
+        map.put("content", "订单号：" + order.getNumber());
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+    }
+
     /**
      * 检查客户的收货地址是否超出配送范围
      *
      * @param address
      */
     private void checkOutOfRange(String address) {
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("address", shopAddress);
         map.put("output", "json");
         map.put("ak", ak);

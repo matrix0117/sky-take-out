@@ -35,4 +35,6 @@ public interface OrderService {
     PageResult getOrders(OrdersPageQueryDTO pageQueryDTO);
 
     void CancelOrder(OrdersCancelDTO ordersCancelDTO) throws Exception;
+
+    void reminderOrder(Long id);
 }

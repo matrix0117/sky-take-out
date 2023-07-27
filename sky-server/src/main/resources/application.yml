@@ -60,7 +60,7 @@ sky:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
   shop:
-    address:
+    address: 海南省三亚市崖州区创新研学谷
   baidu:
     ak: 5xHpi4O1ftImaQuGtKdefMZ6tqKPpMcK
 
