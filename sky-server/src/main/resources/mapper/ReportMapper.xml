@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ReportMapper">
+    <select id="turnoverStatistics" resultType="com.sky.entity.Orders">
+        select amount, order_time
+        from orders
+        where status = 5
+          and order_time between #{begin} and #{end}
+        order by order_time
+    </select>
+    <select id="userStatistics" resultType="java.time.LocalDateTime">
+        select create_time
+        from user
+        where create_time between #{begin} and #{end}
+        order by create_time
+    </select>
+    <select id="ordersStatistics" resultType="com.sky.entity.Orders">
+        select status, order_time
+        from orders
+        where order_time between #{begin} and #{end}
+        order by order_time
+    </select>
+
+    <select id="salesTop10" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.name name, sum(od.number) number
+        from order_detail od
+                 left outer join orders o on od.order_id = o.id
+        where o.order_time between #{begin} and #{end}
+        group by od.name
+        order by number desc
+        limit 0, 10
+    </select>
+</mapper>
