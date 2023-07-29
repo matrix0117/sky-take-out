@@ -8,6 +8,7 @@ import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SetmealMapper {
@@ -24,4 +25,5 @@ public interface SetmealMapper {
     void addSetmeal(Setmeal setmeal);
 
 
+    Integer countByMap(Map map);
 }

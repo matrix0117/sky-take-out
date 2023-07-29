@@ -7,6 +7,7 @@ import com.sky.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DishMapper {
@@ -22,4 +23,6 @@ public interface DishMapper {
 
 
     void deleteDish(Long[] ids);
+
+    Integer countByMap(Map map);
 }

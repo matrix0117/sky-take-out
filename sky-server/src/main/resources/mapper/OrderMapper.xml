@@ -80,4 +80,22 @@
         </where>
         order by order_time desc
     </select>
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from orders
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            and order_time between #{begin} and #{end}
+        </where>
+    </select>
+    <select id="sumByMap" resultType="java.lang.Double">
+        select sum(amount) from orders
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            and order_time between #{begin} and #{end}
+        </where>
+    </select>
 </mapper>

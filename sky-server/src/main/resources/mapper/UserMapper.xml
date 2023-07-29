@@ -10,4 +10,9 @@
     <select id="getUserByOpenId" resultType="com.sky.entity.User">
         select * from user where openid = #{openId}
     </select>
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id)
+        from user
+        where create_time between #{begin} and #{end}
+    </select>
 </mapper>
